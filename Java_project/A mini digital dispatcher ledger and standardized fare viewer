@@ -1,0 +1,106 @@
+import java.util.*;
+
+
+
+public class KamoopdrassSystem {
+
+    public static void main(String[] args) {
+       
+    Scanner scanner = new Scanner(System.in);
+
+        // --- DATA STRUCTURES ---
+        Queue<String> driverQueue = new LinkedList<>(); 
+        HashMap<String, Integer> fareMatrix = new LinkedHashMap<>(); 
+        
+        // Official Fare Matrix
+        fareMatrix.put("FOODHAUS", 15);
+        fareMatrix.put("PIER", 60);
+        fareMatrix.put("GAISANO", 50);
+        fareMatrix.put("COC", 60);
+        fareMatrix.put("BARANGAY HALL/HIGHSCHOOL", 40);
+        fareMatrix.put("NHA KAUSWAGAN", 50);
+        fareMatrix.put("CENTRAL SCHOOL", 25);
+        fareMatrix.put("MOGCHS", 50);
+        fareMatrix.put("MCARTHUR", 40);
+        fareMatrix.put("LICEO COLLEGE", 50);
+        fareMatrix.put("LICEO SENIOR HIGH", 60);
+        fareMatrix.put("CARMEN MARKET", 70);
+        fareMatrix.put("MACABALAN", 80);
+
+        String[] authorizedDispatchers = {"AdminUser", "DispatcherOne", "JuanDelaCruz"};
+
+        // --- VALIDATION PATTERNS ---
+        String menuRegex = "^[1-4]$";             // Main and Dispatcher Menus
+        String subMenuRegex = "^[1-2]$";          // Driver and Passenger Menus
+        String userRegex = "^[a-zA-Z]{4,}$";      
+        String passRegex = ".{6,}";               
+        String idRegex = "^[0-9]{4}$";            // EXACTLY 4 Numbers
+
+        boolean systemRunning = true;
+
+        while (systemRunning) {
+            // [A] MAIN MENU
+            System.out.println("\n===============================================");
+            System.out.println("   KAMOOPDRASS: DIGITAL DISPATCH LEDGER");
+            System.out.println("===============================================");
+            System.out.println("1. Dispatcher Login\n2. Driver View\n3. Passenger View\n4. Exit System");
+            System.out.print("\nMain Selection: ");
+            String mainChoice = scanner.nextLine();
+
+            if (!mainChoice.matches(menuRegex)) {
+                System.out.println("\n[!] INVALID INPUT: Please select 1-4.");
+                continue; 
+            }
+
+            // --- CHOICE 1: DISPATCHER ---
+            if (mainChoice.equals("1")) {
+                System.out.println("\n--- DISPATCHER LOGIN ---");
+                System.out.print("Username: ");
+                String u = scanner.nextLine();
+                System.out.print("Password: ");
+                String p = scanner.nextLine();
+
+                boolean isAuth = false;
+                if (u.matches(userRegex) && p.matches(passRegex)) {
+                    for (String auth : authorizedDispatchers) {
+                        if (u.equalsIgnoreCase(auth)) { isAuth = true; break; }
+                    }
+                }
+
+                if (isAuth) {
+                    boolean dispActive = true;
+                    while (dispActive) {
+                        System.out.println("\n--- DISPATCHER CONTROL PANEL ---");
+                        System.out.println("1. Log-in New Driver\n2. Dispatch Driver\n3. View Live Queue\n4. Logout");
+                        System.out.print("Action: ");
+                        String dChoice = scanner.nextLine();
+
+                        if (!dChoice.matches(menuRegex)) {
+                            System.out.println("\n[!] INVALID ACTION: Select 1-4.");
+                            continue;
+                        }
+
+                        if (dChoice.equals("1")) { 
+                            System.out.print("Enter 4-Digit Driver ID: ");
+                            String idInput = scanner.nextLine();
+                            if (idInput.matches(idRegex)) {
+                                String formattedID = "ID: " + idInput;
+                                if (driverQueue.contains(formattedID)) {
+                                    System.out.println("\n[!] ERROR: ID " + idInput + " is ALREADY in the queue.");
+                                } else {
+                                    driverQueue.add(formattedID);
+                                    System.out.println("SUCCESS: ID " + idInput + " added.");
+                                }
+                            } else { System.out.println("\n[!] ERROR: Must be exactly 4 digits."); }
+                        } 
+                        else if (dChoice.equals("2")) { 
+                            if (driverQueue.isEmpty()) System.out.println("\n[!] ERROR: Queue Empty.");
+                            else {
+                                System.out.print("Enter Destination: ");
+                                String dest = scanner.nextLine().toUpperCase();
+                                if (fareMatrix.containsKey(dest)) {
+                                    String driver = driverQueue.poll();
+                                    
+                                    // --- THE CLEAN SUMMARY RECEIPT ---
+                                    System.out.println("\n===========================================");
+                                    Sy
